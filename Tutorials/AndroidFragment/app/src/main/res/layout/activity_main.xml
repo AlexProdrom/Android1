@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.liis.androidfragment.MainActivity">
+
+    <fragment
+        android:id="@+id/top_fragment"
+        android:name="com.example.liis.androidfragment.TopFragment"
+        android:layout_width="378dp"
+        android:layout_height="133dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <fragment
+        android:id="@+id/bottom_fragment"
+        android:name="com.example.liis.androidfragment.BottomFragment"
+        android:layout_width="385dp"
+        android:layout_height="284dp"
+        tools:layout_editor_absoluteX="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/top_fragment"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>
