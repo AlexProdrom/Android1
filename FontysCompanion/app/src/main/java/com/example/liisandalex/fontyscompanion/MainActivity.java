@@ -12,10 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import java.net.URL;
+
+public class MainActivity extends AppCompatActivity implements TokenFragment.OnFragmentInteractionListener {
 
     private BottomNavigationView navigation;
     private FragmentTransaction transaction;
+    private URL url = new URL("https://api.fhict.nl/grades/i123456");
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -58,4 +61,8 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    @Override
+    public void onFragmentInteraction(String token) {
+
+    }
 }
