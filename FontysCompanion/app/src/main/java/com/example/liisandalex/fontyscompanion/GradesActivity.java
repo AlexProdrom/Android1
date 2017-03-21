@@ -14,6 +14,8 @@ import java.util.List;
 
 public class GradesActivity extends Fragment {
 
+    private List<Grade> grades;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +27,7 @@ public class GradesActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.activity_grades,container,false);
 
-        List<Grade> grades = GetGrades();
+        List<Grade> gradesTemp = grades;
 
         ListView lv = (ListView)view.findViewById(R.id.listView);
         lv.setAdapter(new CustomListAdapter(getActivity().getApplicationContext(), grades));
@@ -61,7 +63,7 @@ public class GradesActivity extends Fragment {
 
 
     public List<Grade> GetGrades(){
-        List<Grade> list = new ArrayList<>();
+        /*List<Grade> list = new ArrayList<>();
 
         Grade sd2 = new Grade("2017/02/08", "System Development", "SD2", 8.0, true);
         Grade popd3 = new Grade("2017/02/18", "Personal dev", "POPD3", 8.0, true);
@@ -70,7 +72,10 @@ public class GradesActivity extends Fragment {
         list.add(sd2);
         list.add(popd3);
         list.add(prop);
-        return list;
-    }
+        return list;*/
+        return grades;}
+
+    public void SetGrades(List<Grade> gr) {
+        grades=gr;}
 
 }
