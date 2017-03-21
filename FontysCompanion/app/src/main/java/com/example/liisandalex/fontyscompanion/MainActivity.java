@@ -12,6 +12,7 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,11 +32,15 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
     private FragmentTransaction transaction;
     private URL url;
     private URLConnection connection;
-    JSONTask thread;
+    JSONTaskGrades gradesThread;
     InputStream is;
     InputStreamReader isr;
     List<Grade> grades;
     Fragment selectedFragment = null;
+
+    private HomeActivity homeactivity;
+    private GradesActivity gradesactivity;
+    private ScheduleActivity scheduleacivity;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -44,13 +49,13 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment = new HomeActivity();
+                    selectedFragment = homeactivity;
                     break;
                 case R.id.navigation_schedule:
-                    selectedFragment = new ScheduleActivity();
+                    selectedFragment = scheduleacivity;
                     break;
                 case R.id.navigation_grades:
-                    selectedFragment = new GradesActivity();
+                    selectedFragment = gradesactivity;
                     break;
             }
 
@@ -67,19 +72,19 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        homeactivity = new HomeActivity();
+        scheduleacivity = new ScheduleActivity();
+        gradesactivity = new GradesActivity();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        HomeActivity firstpage=new HomeActivity();
-        transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.content,firstpage);
-        transaction.commit();
 
-        try{
+
+        try {
             url = new URL("https://api.fhict.nl/grades/me");
-            connection = (HttpURLConnection)url.openConnection();
-        } catch (MalformedURLException e){
+            connection = (HttpURLConnection) url.openConnection();
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,14 +93,18 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
     @Override
     public void onFragmentInteraction(String token) {
-        thread = new JSONTask();
-        thread.execute(token);
+        transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.content, gradesactivity);
+        transaction.commit();
+
+        gradesThread = new JSONTaskGrades();
+        gradesThread.execute(token);
     }
 
-    public  class JSONTask extends AsyncTask<String, Void, String[]> {
+    public class JSONTaskGrades extends AsyncTask<String, Void, List<Grade>> {
 
         @Override
-        protected String[] doInBackground(String... params){
+        protected List<Grade> doInBackground(String... params) {
 
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + params[0]);
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                 isr = new InputStreamReader(is);
                 JsonReader jsonReader = new JsonReader(isr);
 
-                if(jsonReader.peek() == JsonToken.BEGIN_ARRAY){
+                if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
                     jsonReader.beginArray();
                     while (jsonReader.hasNext()) {
                         if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
@@ -118,30 +127,30 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                             String subject = new String();
                             Double grade = new Double(4);
                             String date = new String();
+                            boolean passed = true;
                             Grade gr;
 
 
-                            while (jsonReader.hasNext()){
+                            while (jsonReader.hasNext()) {
                                 String name = new String();
                                 name = jsonReader.nextName();
 
-                                if(name.equals("date")){
-                                    date=jsonReader.nextString();
-                                }
-                                else if(name.equals("item")){
+                                if (name.equals("date")) {
+                                    date = (jsonReader.nextString()).substring(0,10);
+                                } else if (name.equals("item")) {
                                     subject = jsonReader.nextString();
-                                }
-                                else if(name.equals("itemCode")){
+                                } else if (name.equals("itemCode")) {
                                     subCode = jsonReader.nextString();
-                                }
-                                else if(name.equals("grade")){
-                                    grade=Double.parseDouble(jsonReader.nextString()) ;
+                                } else if (name.equals("grade")) {
+                                    grade = Double.parseDouble(jsonReader.nextString());
+                                } else if (name.equals("passed")){
+                                    passed = jsonReader.nextBoolean();
                                 }
                                 else jsonReader.skipValue();
 
                             }
 
-                            gr= new Grade(date,subject,subCode,grade,true);
+                            gr = new Grade(date, subject, subCode, grade, passed);
                             grades.add(gr);
 
                             jsonReader.endObject();
@@ -149,21 +158,23 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                     }
                     jsonReader.endArray();
 
-                    // for(Grade g:grades){
-                    //    System.out.println(g.getDate() + g.getSubject() + g.getSubjectCode() + g.getGrade());
-                    //}
+                    //to test
+                     for(Grade g:grades){
+                        System.out.println(g.getDate() + g.getSubject() + g.getSubjectCode() + g.getGrade() + g.isPassed());
+                    }
                 }
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return params;}
+            return grades;
+        }
+
+        protected void onPostExecute(List<Grade> gradeslist) {
+            final ListView lv = (ListView) findViewById(R.id.listView);
+            lv.setAdapter(new CustomListAdapter(MainActivity.this, gradeslist));
+        }
     }
 
-    public  void OnPostExecute(String[] results) {
-
-        ((GradesActivity)selectedFragment).SetGrades(grades);
-
-    }
 }
