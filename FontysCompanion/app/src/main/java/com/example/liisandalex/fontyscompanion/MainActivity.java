@@ -30,13 +30,13 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
     private BottomNavigationView navigation;
     private FragmentTransaction transaction;
-    private URL url;
-    private URLConnection connection;
+
     JSONTaskGrades gradesThread;
     InputStream is;
     InputStreamReader isr;
     List<Grade> grades;
     Fragment selectedFragment = null;
+    private String token;
 
     private HomeActivity homeactivity;
     private GradesActivity gradesactivity;
@@ -50,18 +50,31 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     selectedFragment = homeactivity;
+
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, selectedFragment);
+                    transaction.commit();
                     break;
                 case R.id.navigation_schedule:
                     selectedFragment = scheduleacivity;
+
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, selectedFragment);
+                    transaction.commit();
                     break;
                 case R.id.navigation_grades:
                     selectedFragment = gradesactivity;
+
+                    transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, selectedFragment);
+                    transaction.commit();
+
+                    gradesThread = new JSONTaskGrades();
+                    gradesThread.execute(token);
                     break;
             }
 
-            transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.content, selectedFragment);
-            transaction.commit();
+
             return true;
         }
 
@@ -78,27 +91,16 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
-
-        try {
-            url = new URL("https://api.fhict.nl/grades/me");
-            connection = (HttpURLConnection) url.openConnection();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onFragmentInteraction(String token) {
-        transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, gradesactivity);
-        transaction.commit();
-
-        gradesThread = new JSONTaskGrades();
-        gradesThread.execute(token);
+//        transaction = getFragmentManager().beginTransaction();
+//        transaction.replace(R.id.content, gradesactivity);
+//        transaction.commit();
+        this.token = token;
+//        gradesThread = new JSONTaskGrades();
+//        gradesThread.execute(token);
     }
 
     public class JSONTaskGrades extends AsyncTask<String, Void, List<Grade>> {
@@ -106,11 +108,17 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         @Override
         protected List<Grade> doInBackground(String... params) {
 
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + params[0]);
+
             grades = new ArrayList<Grade>();
 
             try {
+                URL url;
+                URLConnection connection;
+                url = new URL("https://api.fhict.nl/grades/me");
+                connection = url.openConnection();
+
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Authorization", "Bearer " + params[0]);
                 connection.connect();
                 is = connection.getInputStream();
                 isr = new InputStreamReader(is);
@@ -161,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                     //to test
                      for(Grade g:grades){
                         System.out.println(g.getDate() + g.getSubject() + g.getSubjectCode() + g.getGrade() + g.isPassed());
+
                     }
                 }
             }
@@ -172,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         }
 
         protected void onPostExecute(List<Grade> gradeslist) {
-            final ListView lv = (ListView) findViewById(R.id.listView);
+            ListView lv = (ListView) findViewById(R.id.listView);
             lv.setAdapter(new CustomListAdapter(MainActivity.this, gradeslist));
         }
     }
