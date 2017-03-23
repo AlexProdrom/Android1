@@ -4,12 +4,48 @@
 
 
     <TextView
-        android:id="@+id/tv_home"
+        android:id="@+id/tv_pcn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="38dp"
-        android:text="This is the home fragment!" />
+        android:layout_marginStart="38dp"
+        android:layout_marginTop="48dp"
+        android:textSize="24sp"/>
 
+    <TextView
+        android:id="@+id/tv_gn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/tv_pcn"
+        android:layout_alignStart="@+id/tv_pcn"
+        android:textSize="24sp"/>
+
+    <TextView
+        android:id="@+id/tv_sur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/tv_gn"
+        android:layout_alignStart="@+id/tv_gn"
+        android:textSize="24sp"/>
+
+    <TextView
+        android:id="@+id/tv_mail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/tv_sur"
+        android:layout_alignStart="@+id/tv_sur"
+        android:textSize="24sp"/>
+
+    <TextView
+        android:id="@+id/tv_class"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/tv_mail"
+        android:layout_alignStart="@+id/tv_mail"
+        android:textSize="24sp"/>
 </RelativeLayout>

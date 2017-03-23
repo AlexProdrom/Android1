@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 public class GradesActivity extends Fragment {
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,10 +18,7 @@ public class GradesActivity extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.activity_grades,container,false);
-
+        View view = inflater.inflate(R.layout.activity_grades, container, false);
         return view;
     }
-
-
 }
