@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
     private JSONTaskGrades gradesThread;
     private JSONTaskAccount accountThread;
+    private AsyncTask oldtask;
 
     private Fragment homeFragment, gradesFragment,scheduleFragment;
 
@@ -44,17 +45,21 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    oldtask.cancel(true);
                     changeFragment(homeFragment);
                     accountThread = new JSONTaskAccount();
                     accountThread.execute(token);
+                    oldtask=accountThread;
                     break;
                 case R.id.navigation_schedule:
                     changeFragment(scheduleFragment);
                     break;
                 case R.id.navigation_grades:
+                    oldtask.cancel(true);
                     changeFragment(gradesFragment);
                     gradesThread = new JSONTaskGrades();
                     gradesThread.execute(token);
+                    oldtask=gradesThread;
                     break;
             }
             return true;
@@ -87,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         changeFragment(homeFragment);
         accountThread = new JSONTaskAccount();
         accountThread.execute(token);
-
+        oldtask=accountThread;
     }
 
     public class JSONTaskAccount extends AsyncTask<String, Void, Account> {
@@ -95,45 +100,46 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         Account myAccount;
         @Override
         protected Account doInBackground(String... params) {
-            try {
-                URL url = new URL("https://api.fhict.nl/people/me");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                try {
 
-                connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("Authorization", "Bearer " + params[0]);
+                    URL url = new URL("https://api.fhict.nl/people/me");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                myAccount = new Account();
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.setRequestProperty("Authorization", "Bearer " + params[0]);
 
-                connection.connect();
+                    myAccount = new Account();
 
-                InputStream is = connection.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                JsonReader jsonReader = new JsonReader(isr);
+                    connection.connect();
 
-                if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
-                    jsonReader.beginObject();
-                    while (jsonReader.hasNext()) {
-                        String name = jsonReader.nextName();
-                        if (name.equals("id")) {
-                            myAccount.id = jsonReader.nextString();
-                        } else if (name.equals("givenName")) {
-                            myAccount.giveName = jsonReader.nextString();
-                        } else if (name.equals("surName")) {
-                            myAccount.surName = jsonReader.nextString();
-                        } else if (name.equals("mail")) {
-                            myAccount.mail = jsonReader.nextString();
-                        } else if (name.equals("personalTitle")) {
-                            myAccount.theclass = jsonReader.nextString();
-                        } else {
-                            jsonReader.skipValue();
+                    InputStream is = connection.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(is);
+                    JsonReader jsonReader = new JsonReader(isr);
+
+                    if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                        jsonReader.beginObject();
+                        while (jsonReader.hasNext()) {
+                            String name = jsonReader.nextName();
+                            if (name.equals("id")) {
+                                myAccount.id = jsonReader.nextString();
+                            } else if (name.equals("givenName")) {
+                                myAccount.giveName = jsonReader.nextString();
+                            } else if (name.equals("surName")) {
+                                myAccount.surName = jsonReader.nextString();
+                            } else if (name.equals("mail")) {
+                                myAccount.mail = jsonReader.nextString();
+                            } else if (name.equals("personalTitle")) {
+                                myAccount.theclass = jsonReader.nextString();
+                            } else {
+                                jsonReader.skipValue();
+                            }
                         }
                     }
-                }
-                jsonReader.endObject();
+                    jsonReader.endObject();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             return myAccount;
         }
 
