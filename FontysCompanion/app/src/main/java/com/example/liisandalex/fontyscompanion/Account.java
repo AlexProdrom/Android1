@@ -6,11 +6,11 @@ package com.example.liisandalex.fontyscompanion;
 
 public class Account {
 
-    public String id;
-    public String giveName;
-    public String surName;
-    public String mail;
-    public String theclass;
+    private String id;
+    private String giveName;
+    private String surName;
+    private String mail;
+    private String theclass;
 
     public String getId() {
         return id;
