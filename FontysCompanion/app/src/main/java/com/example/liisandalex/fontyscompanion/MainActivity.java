@@ -129,15 +129,15 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                     while (jsonReader.hasNext()) {
                         String name = jsonReader.nextName();
                         if (name.equals("id")) {
-                            myAccount.id = jsonReader.nextString();
+                            myAccount.setId(jsonReader.nextString());
                         } else if (name.equals("givenName")) {
-                            myAccount.giveName = jsonReader.nextString();
+                            myAccount.setGiveName(jsonReader.nextString());
                         } else if (name.equals("surName")) {
-                            myAccount.surName = jsonReader.nextString();
+                            myAccount.setSurName(jsonReader.nextString());
                         } else if (name.equals("mail")) {
-                            myAccount.mail = jsonReader.nextString();
+                            myAccount.setMail(jsonReader.nextString());
                         } else if (name.equals("personalTitle")) {
-                            myAccount.theclass = jsonReader.nextString();
+                            myAccount.setTheclass(jsonReader.nextString());
                         } else {
                             jsonReader.skipValue();
                         }
