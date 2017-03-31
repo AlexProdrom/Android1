@@ -32,10 +32,11 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
     private FragmentTransaction transaction;
 
     private JSONTaskGrades gradesThread;
+    private JSONTaskSchedule scheduleThread;
     private JSONTaskAccount accountThread;
     private AsyncTask oldtask;
 
-    private Fragment homeFragment, gradesFragment,scheduleFragment;
+    private Fragment homeFragment, gradesFragment, scheduleFragment;
 
     private String token;
 
@@ -49,17 +50,21 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
                     changeFragment(homeFragment);
                     accountThread = new JSONTaskAccount();
                     accountThread.execute(token);
-                    oldtask=accountThread;
+                    oldtask = accountThread;
                     break;
                 case R.id.navigation_schedule:
+                    oldtask.cancel(true);
                     changeFragment(scheduleFragment);
+                    scheduleThread = new JSONTaskSchedule();
+                    scheduleThread.execute(token);
+                    oldtask = scheduleThread;
                     break;
                 case R.id.navigation_grades:
                     oldtask.cancel(true);
                     changeFragment(gradesFragment);
                     gradesThread = new JSONTaskGrades();
                     gradesThread.execute(token);
-                    oldtask=gradesThread;
+                    oldtask = gradesThread;
                     break;
             }
             return true;
@@ -80,84 +85,87 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
     }
 
-    private void changeFragment(Fragment f)
-    {
+    private void changeFragment(Fragment f) {
         transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content, f);
         transaction.commit();
     }
+
+
     @Override
     public void onFragmentInteraction(String token) {
         this.token = token;
+
         changeFragment(homeFragment);
         accountThread = new JSONTaskAccount();
         accountThread.execute(token);
-        oldtask=accountThread;
+        oldtask = accountThread;
     }
 
     public class JSONTaskAccount extends AsyncTask<String, Void, Account> {
         TextView tv;
         Account myAccount;
+
         @Override
         protected Account doInBackground(String... params) {
-                try {
+            try {
 
-                    URL url = new URL("https://api.fhict.nl/people/me");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                URL url = new URL("https://api.fhict.nl/people/me");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                    connection.setRequestProperty("Accept", "application/json");
-                    connection.setRequestProperty("Authorization", "Bearer " + params[0]);
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Authorization", "Bearer " + params[0]);
 
-                    myAccount = new Account();
+                myAccount = new Account();
 
-                    connection.connect();
+                connection.connect();
 
-                    InputStream is = connection.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    JsonReader jsonReader = new JsonReader(isr);
+                InputStream is = connection.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                JsonReader jsonReader = new JsonReader(isr);
 
-                    if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
-                        jsonReader.beginObject();
-                        while (jsonReader.hasNext()) {
-                            String name = jsonReader.nextName();
-                            if (name.equals("id")) {
-                                myAccount.id = jsonReader.nextString();
-                            } else if (name.equals("givenName")) {
-                                myAccount.giveName = jsonReader.nextString();
-                            } else if (name.equals("surName")) {
-                                myAccount.surName = jsonReader.nextString();
-                            } else if (name.equals("mail")) {
-                                myAccount.mail = jsonReader.nextString();
-                            } else if (name.equals("personalTitle")) {
-                                myAccount.theclass = jsonReader.nextString();
-                            } else {
-                                jsonReader.skipValue();
-                            }
+                if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                    jsonReader.beginObject();
+                    while (jsonReader.hasNext()) {
+                        String name = jsonReader.nextName();
+                        if (name.equals("id")) {
+                            myAccount.id = jsonReader.nextString();
+                        } else if (name.equals("givenName")) {
+                            myAccount.giveName = jsonReader.nextString();
+                        } else if (name.equals("surName")) {
+                            myAccount.surName = jsonReader.nextString();
+                        } else if (name.equals("mail")) {
+                            myAccount.mail = jsonReader.nextString();
+                        } else if (name.equals("personalTitle")) {
+                            myAccount.theclass = jsonReader.nextString();
+                        } else {
+                            jsonReader.skipValue();
                         }
                     }
-                    jsonReader.endObject();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                jsonReader.endObject();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return myAccount;
         }
 
         protected void onPostExecute(Account result) {
             tv = (TextView) findViewById(R.id.tv_pcn);
-            tv.setText("PCN: "+myAccount.id);
+            tv.setText("PCN: " + myAccount.id);
 
             tv = (TextView) findViewById(R.id.tv_gn);
-            tv.setText("Firstname: "+myAccount.giveName);
+            tv.setText("Firstname: " + myAccount.giveName);
 
             tv = (TextView) findViewById(R.id.tv_sur);
-            tv.setText("Lastname: "+myAccount.surName);
+            tv.setText("Lastname: " + myAccount.surName);
 
             tv = (TextView) findViewById(R.id.tv_mail);
-            tv.setText("Email: "+myAccount.mail);
+            tv.setText("Email: " + myAccount.mail);
 
             tv = (TextView) findViewById(R.id.tv_class);
-            tv.setText("Class :"+myAccount.theclass);
+            tv.setText("Class :" + myAccount.theclass);
         }
     }
 
@@ -225,9 +233,86 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         }
 
         protected void onPostExecute(List<Grade> gradeslist) {
-            ListView lv = (ListView) findViewById(R.id.listView);
+            ListView lv = (ListView) findViewById(R.id.listViewGrades);
             lv.setAdapter(new CustomListAdapter(MainActivity.this, gradeslist));
         }
     }
 
+    public class JSONTaskSchedule extends AsyncTask<String, Void, List<Schedule>> {
+
+        @Override
+        protected List<Schedule> doInBackground(String... params) {
+            List<Schedule> schedule = new ArrayList<>();
+
+            try {
+                URL url = new URL("https://api.fhict.nl/schedule/me");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Authorization", "Bearer " + params[0]);
+                connection.connect();
+
+                InputStream is = connection.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                JsonReader jsonReader = new JsonReader(isr);
+
+                if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                    jsonReader.beginObject();
+                    while (jsonReader.hasNext()) {
+                        String name1 = jsonReader.nextName();
+                        if (name1.equals("data") && jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+                            jsonReader.beginArray();
+                            while (jsonReader.hasNext()) {
+                                if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                                    jsonReader.beginObject();
+
+                                    String name2 = new String();
+                                    String room = new String();
+                                    String subject = new String();
+                                    String teacher = new String();
+                                    String start = new String();
+                                    String end = new String();
+
+                                    Schedule sc;
+                                    while (jsonReader.hasNext()) {
+                                        name2 = jsonReader.nextName();
+                                        if (name2.equals("room")) {
+                                            room = jsonReader.nextString();
+                                        } else if (name2.equals("subject")) {
+                                            subject = jsonReader.nextString();
+                                        } else if (name2.equals("teacherAbbreviation")) {
+                                            teacher = jsonReader.nextString();
+                                        } else if (name2.equals("start")) {
+                                            String value = jsonReader.nextString();
+                                            start = value.substring(0, 10) + " " + value.substring(11, 19);
+                                        } else if (name2.equals("end")) {
+                                            String value = jsonReader.nextString();
+                                            end = value.substring(0, 10) + " " + value.substring(11, 19);
+                                        } else jsonReader.skipValue();
+
+                                    }
+
+                                    sc = new Schedule(room, subject, teacher, start, end);
+                                    schedule.add(sc);
+
+                                    jsonReader.endObject();
+                                }
+                            }
+                            jsonReader.endArray();
+                        } else jsonReader.skipValue();
+                    }
+                    jsonReader.endObject();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return schedule;
+        }
+
+        @Override
+        protected void onPostExecute(List<Schedule> schedules) {
+            ListView lv = (ListView) findViewById(R.id.listViewSchedule);
+            lv.setAdapter(new ScheduleListAdapter(MainActivity.this, schedules));
+        }
+    }
 }
