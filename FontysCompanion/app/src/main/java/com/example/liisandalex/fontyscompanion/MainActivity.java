@@ -153,19 +153,19 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
 
         protected void onPostExecute(Account result) {
             tv = (TextView) findViewById(R.id.tv_pcn);
-            tv.setText("PCN: " + myAccount.id);
+            tv.setText("PCN: " + myAccount.getId());
 
             tv = (TextView) findViewById(R.id.tv_gn);
-            tv.setText("Firstname: " + myAccount.giveName);
+            tv.setText("Firstname: " + myAccount.getGiveName());
 
             tv = (TextView) findViewById(R.id.tv_sur);
-            tv.setText("Lastname: " + myAccount.surName);
+            tv.setText("Lastname: " + myAccount.getSurName());
 
             tv = (TextView) findViewById(R.id.tv_mail);
-            tv.setText("Email: " + myAccount.mail);
+            tv.setText("Email: " + myAccount.getMail());
 
             tv = (TextView) findViewById(R.id.tv_class);
-            tv.setText("Class :" + myAccount.theclass);
+            tv.setText("Class :" + myAccount.getTheclass());
         }
     }
 
