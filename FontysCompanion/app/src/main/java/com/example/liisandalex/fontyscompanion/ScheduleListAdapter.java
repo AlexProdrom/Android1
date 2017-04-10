@@ -59,7 +59,7 @@ public class ScheduleListAdapter extends BaseAdapter {
         Schedule sc = this.listData.get(position);
         holder.subject.setText("Subject: " + sc.getSubject());
         holder.room.setText("Room: " + sc.getRoom());
-        holder.teacher.setText("Teacher" + sc.getTeacher());
+        holder.teacher.setText("Teacher: " + sc.getTeacher());
         holder.start.setText("Start: " + sc.getStart());
         holder.end.setText("End: " + sc.getEnd());
 
