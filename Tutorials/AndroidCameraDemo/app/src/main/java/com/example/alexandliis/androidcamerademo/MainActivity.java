@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent= new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
         //The external storage directory
-        File dir= Environment.getDownloadCacheDirectory();
+        File dir= Environment.getExternalStorageDirectory();
         if(!dir.exists()) {
             dir.mkdirs();
         }
