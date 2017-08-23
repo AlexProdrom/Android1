@@ -1,4 +1,4 @@
-package com.example.liisandalex.fontyscompanion;
+package com.example.liisandalex.fontyscompanion.models;
 
 /**
  * Created by Liis on 15/03/2017.

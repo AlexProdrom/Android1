@@ -1,4 +1,4 @@
-package com.example.liisandalex.fontyscompanion;
+package com.example.liisandalex.fontyscompanion.models;
 
 /**
  * Created by prodromalex on 3/18/2017.

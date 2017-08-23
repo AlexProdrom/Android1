@@ -1,4 +1,4 @@
-package com.example.liisandalex.fontyscompanion;
+package com.example.liisandalex.fontyscompanion.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class GradesActivity extends Fragment {
+import com.example.liisandalex.fontyscompanion.R;
+
+public class GradesFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,7 +20,6 @@ public class GradesActivity extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_grades, container, false);
-        return view;
+        return inflater.inflate(R.layout.activity_grades, container, false);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.liisandalex.fontyscompanion;
+package com.example.liisandalex.fontyscompanion.activities;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -11,18 +11,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.liisandalex.fontyscompanion.models.Account;
+import com.example.liisandalex.fontyscompanion.CustomListAdapter;
+import com.example.liisandalex.fontyscompanion.models.Grade;
+import com.example.liisandalex.fontyscompanion.fragments.HomeFragment;
+import com.example.liisandalex.fontyscompanion.R;
+import com.example.liisandalex.fontyscompanion.models.Schedule;
+import com.example.liisandalex.fontyscompanion.fragments.ScheduleFragment;
+import com.example.liisandalex.fontyscompanion.ScheduleListAdapter;
+import com.example.liisandalex.fontyscompanion.TokenFragment;
+import com.example.liisandalex.fontyscompanion.fragments.GradesFragment;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,13 +83,11 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        homeFragment = new HomeActivity();
-        scheduleFragment = new ScheduleActivity();
-        gradesFragment = new GradesActivity();
+        homeFragment = new HomeFragment();
+        scheduleFragment = new ScheduleFragment();
+        gradesFragment = new GradesFragment();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
     }
 
     private void changeFragment(Fragment f) {
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements TokenFragment.OnF
         accountThread = new JSONTaskAccount();
         accountThread.execute(token);
         oldtask = accountThread;
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     public class JSONTaskAccount extends AsyncTask<String, Void, Account> {

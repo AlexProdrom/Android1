@@ -1,4 +1,4 @@
-package com.example.liisandalex.fontyscompanion;
+package com.example.liisandalex.fontyscompanion.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class HomeActivity extends Fragment {
+import com.example.liisandalex.fontyscompanion.R;
+
+public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -15,7 +17,6 @@ public class HomeActivity extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_home, container, false);
-        return view;
+        return inflater.inflate(R.layout.activity_home, container, false);
     }
 }

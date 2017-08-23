@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.liisandalex.fontyscompanion.models.Grade;
+
 import java.util.List;
 
 /**
